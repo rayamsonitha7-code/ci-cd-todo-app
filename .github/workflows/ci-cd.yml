@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build:
-    name: Build Website
+    name: Build and Test Website
     runs-on: ubuntu-latest
 
     steps:
@@ -33,7 +33,7 @@ jobs:
           mkdir -p dist
           cp index.html styles.css script.js dist/
 
-      - name: Upload Website
+      - name: Upload Website Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
