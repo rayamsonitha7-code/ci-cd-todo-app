@@ -1,0 +1,63 @@
+name: CI/CD Pipeline
+
+on:
+push:
+branches:
+- main
+pull_request:
+branches:
+- main
+workflow_dispatch:
+
+permissions:
+contents: read
+
+jobs:
+build-and-test:
+name: Build and Test
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Checkout Repository
+    uses: actions/checkout@v4
+
+  - name: Setup Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: 20
+
+  - name: Check HTML File
+    run: npx --yes html-validate index.html
+
+  - name: Build Website
+    run: |
+      mkdir dist
+      cp index.html styles.css script.js dist/
+
+  - name: Upload Website
+    uses: actions/upload-pages-artifact@v3
+    with:
+      path: dist
+```
+
+deploy:
+name: Deploy Website
+needs: build-and-test
+if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+runs-on: ubuntu-latest
+
+```
+permissions:
+  pages: write
+  id-token: write
+
+environment:
+  name: github-pages
+  url: ${{ steps.deployment.outputs.page_url }}
+
+steps:
+  - name: Deploy to GitHub Pages
+    id: deployment
+    uses: actions/deploy-pages@v4
+```
